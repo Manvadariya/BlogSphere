@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-BlogsphereApplication<blogsphere>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.example.blogs.blogsphere.BlogsphereApplication",
+            "projectName": "blogsphere",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
