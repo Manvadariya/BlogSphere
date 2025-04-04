@@ -5,6 +5,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,7 +23,7 @@ public class Tag {
     private String tagName;
 
     // Many-to-Many relationship with posts (bidirectional)
-    @ManyToMany(mappedBy = "tags")
+    @ManyToMany(mappedBy = "tags", cascade = CascadeType.ALL)
     @JsonIgnore // to avoid infinite recursion during serialization
     // This annotation is used to ignore this field during serialization
     private Set<Post> posts = new HashSet<>();

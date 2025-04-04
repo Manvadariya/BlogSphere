@@ -48,7 +48,7 @@ public class Post {
     private List<Comment> comments = new ArrayList<>();
 
     // Many-to-Many relationship with tags (bidirectional)
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.PERSIST})
     @JoinTable(
         name = "post_tags",
         joinColumns = @JoinColumn(name = "post_id"),

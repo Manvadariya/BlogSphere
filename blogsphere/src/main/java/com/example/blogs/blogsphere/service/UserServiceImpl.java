@@ -5,8 +5,12 @@ import java.util.List;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.blogs.blogsphere.DAO.CommentDAO;
+import com.example.blogs.blogsphere.DAO.PostDAO;
 import com.example.blogs.blogsphere.DAO.RoleDAO;
 import com.example.blogs.blogsphere.DAO.UserDAO;
+import com.example.blogs.blogsphere.entity.Comment;
+import com.example.blogs.blogsphere.entity.Post;
 import com.example.blogs.blogsphere.entity.Role;
 import com.example.blogs.blogsphere.entity.User;
 
@@ -17,11 +21,15 @@ public class UserServiceImpl implements UserService {
 
     private final UserDAO userDAO;
     private final RoleDAO roleDAO;
+    private final PostDAO postDAO;
+    private final CommentDAO commentDAO;
     private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserDAO userDAO, RoleDAO roleDAO, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserDAO userDAO, RoleDAO roleDAO, PostDAO postDAO, CommentDAO commentDAO, PasswordEncoder passwordEncoder) {
         this.userDAO = userDAO;
         this.roleDAO = roleDAO;
+        this.postDAO = postDAO;
+        this.commentDAO = commentDAO;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -64,6 +72,25 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(Long userId) {
         if (!userDAO.existsById(userId)) {
             throw new RuntimeException("User not found with id " + userId);
+        }
+        User user = getUserById(userId);
+        
+        // also delete all the related comments by user
+        List<Comment> userComments = commentDAO.findCommentsByUserId(userId);
+        for (Comment comment : userComments) {
+            commentDAO.delete(comment);
+        }
+        
+        // If you want to delete posts directly using the DAO:
+        List<Post> userPosts = postDAO.findPostsByUserId(userId);
+        for (Post post : userPosts) {
+            postDAO.delete(post);
+        }
+        
+        // Then handle roles as before
+        for (Role r : user.getRoles()) {
+            r.setUser(null);
+            roleDAO.delete(r);
         }
         userDAO.deleteById(userId);
     }
